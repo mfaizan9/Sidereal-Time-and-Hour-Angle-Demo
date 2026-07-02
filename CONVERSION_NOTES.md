@@ -76,7 +76,7 @@ foundation files are byte-for-byte unchanged.
 3. **On-sphere text labels are HTML overlays, not canvas-baked.** The RA (white),
    dec (red) and hour-angle (gold) read-outs and the N/E/S/W direction labels are
    positioned HTML (percent coordinates over the scaled canvas) so they stay crisp
-   and zoom with the page. See ACCESSIBILITY.md for the MathJax note on these.
+   and zoom with the page. See ACCESSIBILITY.md for the note on these.
 4. **Assets reused as-is.** `star.png` / `star-hover.png` (Draggable Star frames 1
    and 2) and `stickfigure.png` (Stickfigure symbol) are the original exported
    bitmaps, copied unchanged into `assets/` and composited with `drawImage`. No art
@@ -85,6 +85,14 @@ foundation files are byte-for-byte unchanged.
 
 ## Cross-browser
 Standards-only HTML/CSS/JS (Canvas 2-D, Pointer Events, `<input type=range>`,
-CSS grid). MathJax uses SVG output with `fontCache:'local'` (no web-font fetch).
-Verified rendering + interaction in the Chromium preview; no Chrome-only APIs or
-prefix-only CSS are used, so Firefox and Safari (desktop + iOS) behave the same.
+CSS grid) with no external libraries. Verified rendering + interaction in the
+Chromium preview; no Chrome-only APIs or prefix-only CSS are used, so Firefox and
+Safari (desktop + iOS) behave the same.
+
+## Note on MathJax / equations
+An earlier revision typeset the equations and unit symbols with a locally-vendored
+MathJax. Per the maintainer's request the read-outs were changed to plain text and
+MathJax was removed entirely (the defining relation and the hour-angle read-out are
+plain HTML; the ʰ / ° unit symbols are plain `<sup>` / degree glyphs, with the
+spoken unit carried by each control's `aria-label` / `aria-valuetext`). Removing
+the ~24 MB MathJax bundle also fixed GitHub Pages deployment (see README).

@@ -49,27 +49,23 @@ paired with its quantity **and unit** in an `aria-valuetext` / `aria-label` /
   screen" a sighted user sees. Both were sanity-checked against NVDA (Windows) and
   VoiceOver (macOS) wording.
 
-## MathJax
-- The slider unit symbols (ʰ, °) beside the number boxes are typeset by MathJax
-  (SVG output) via the foundation's `kl-unl.js` (`klunlInitEqn`). Right-clicking
-  them opens the MathJax menu ("Show Math As" → TeX / MathML); the menu is left
-  enabled and the `contextmenu` event is not trapped.
-- The live **hour angle: −2.00 h** read-out is plain HTML text (matching the
-  original's "hour angle: … h" field), with a `.sr-only` units-complete spoken
-  companion ("Hour angle minus 2.00 hours.").
+## Equations, symbols and units (no MathJax)
+This sim uses **no MathJax** (it was removed — see CONVERSION_NOTES). The content
+here is text/units, not real math notation, so plain accessible HTML is used and
+every unit is spoken by the control that owns it:
+- The slider unit symbols beside the number boxes (ʰ via `<sup>h</sup>`, ° via the
+  degree glyph) are decorative (`aria-hidden`); the spoken unit comes from each
+  input's `aria-label` ("Sidereal time, hours", "Latitude, degrees", …) and each
+  slider's `aria-valuetext` ("Right ascension 4.00 hours", "Declination 30.0
+  degrees", …), so no value is ever announced as a bare number.
+- The live **hour angle: −2.00 h** read-out is plain HTML, with a `.sr-only`
+  units-complete spoken companion ("Hour angle minus 2.00 hours.").
 - The defining relation **Hour Angle = Sidereal Time − Right Ascension** is plain
-  italic HTML text (read directly by screen readers), matching the original's
-  italic caption. Neither the read-out nor the relation contains real math
-  notation, so they are intentionally not MathJax-typeset.
-- **Known divergence (documented):** the three read-out labels that *ride on the
-  rotating sphere* — RA "4.0h" (white), dec "30.0°" (red), hour angle "2.0h" (gold)
-  — and the N/E/S/W direction labels are plain HTML overlays using Unicode "h"/"°",
-  **not** MathJax. They are repositioned every animation frame while dragging;
-  re-running the MathJax typesetter on each frame would make dragging lag. The
-  authoritative, MathJax-typeset values with the same information live in the
-  control panel (the RA/dec slider values and the hour-angle read-out), and the
-  spoken description carries full units. This is the one place math is not
-  MathJax-typeset, traded off for interactive performance.
+  italic HTML text, read directly by screen readers.
+- The read-out labels that ride on the rotating sphere — RA (white), dec (red),
+  hour angle (gold) — and the N/E/S/W direction labels are plain HTML overlays
+  using Unicode "h"/"°"; the authoritative values with full spoken units live in
+  the control panel and the live diagram description.
 
 ## Colour & contrast
 - Palette comes from the KL-UNL CSS custom properties. State is never encoded by

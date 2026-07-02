@@ -38,12 +38,20 @@ html5/
                         (kl-unl-masthead.js, kl-unl.css, kl-unl.js, contents.json)
   styles/styles.css   sim-specific styles only
   simulation.js       all sim logic (engine port + controller + rendering)
-  assets/             reused exported art (star.png, star-hover.png,
-                        stickfigure.png) + vendored MathJax (SVG output)
+  assets/             reused exported art (star.png, star-hover.png, stickfigure.png)
+  .nojekyll           tells GitHub Pages to serve files as-is (skip Jekyll)
   README.md           this file
   CONVERSION_NOTES.md AS -> HTML5 mapping and behaviour notes
   ACCESSIBILITY.md    WCAG affordances and remaining QA notes
 ```
 
-No build step, no bundler, no CDN. Every runtime fetch is local
-(`foundation/contents.json` and the vendored MathJax).
+No build step, no bundler, no CDN, no external libraries. The only runtime fetch
+is local (`foundation/contents.json`).
+
+## Hosting on GitHub Pages
+
+Deploy this `html5/` folder as the site root (its `index.html` is the entry
+point). The included empty `.nojekyll` file tells GitHub Pages to publish the
+files as-is instead of running them through Jekyll — without it, Jekyll's build
+step can fail on third-party JavaScript, which is what produces the generic
+"Deployment failed, try again later" error. Keep `.nojekyll` at the site root.

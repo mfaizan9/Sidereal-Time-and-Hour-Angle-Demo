@@ -6,8 +6,8 @@
    constants and the number formatting below are copied verbatim from that
    source (CelestialSphere.as + "2..9 CS *.as", "Hour Angle Demo.as",
    "Draggable Star.as", "toFixed.as"). The 3-D sphere engine is reproduced on an
-   HTML5 <canvas>; controls are native and keyboard-operable; equations and unit
-   symbols are typeset by MathJax.
+   HTML5 <canvas>; controls are native and keyboard-operable; read-outs and unit
+   symbols are plain HTML.
 
    The engine keeps the exact projection math:
      theta = viewer azimuth rotation of the sphere   (radians internally)
@@ -898,7 +898,7 @@
     }
 
     // ----------------------------------------------------------------------
-    // MathJax read-outs (hour angle value + defining relation) and a11y text
+    // Hour-angle read-out (plain text) and a11y spoken form
     // ----------------------------------------------------------------------
     syncHourAngleReadout() {
       // Plain-text read-out (matches the original "hour angle: -0.37 h" field).
@@ -1071,17 +1071,11 @@
     if (window.haApp) return;
     window.haApp = new App();
     window.haApp.syncHourAngleReadout();
-    if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise().catch((e) => console.error(e));
   }
 
-  const priorInit = window.klunlInitEqn;
-  window.klunlInitEqn = function () { if (typeof priorInit === 'function') { /* superseded */ } boot(); };
-
-  // Boot even if MathJax/foundation ordering varies.
+  // The foundation calls klunlInitEqn() on load; redefine it (per convention) to
+  // boot the sim. Also boot directly in case ordering varies.
+  window.klunlInitEqn = boot;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
-
-  if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
-    MathJax.startup.promise.then(() => { if (window.haApp) { window.haApp.syncHourAngleReadout(); } });
-  }
 })();

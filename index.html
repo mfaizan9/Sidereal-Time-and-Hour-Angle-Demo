@@ -77,7 +77,7 @@
                 <input class="control-row__input sim-num" id="stNumber" type="text"
                        inputmode="decimal" autocomplete="off" value="2.00" maxlength="6"
                        aria-label="Sidereal time, hours">
-                <span class="sim-unit" aria-hidden="true">\(^{\mathrm{h}}\)</span>
+                <span class="sim-unit" aria-hidden="true"><sup>h</sup></span>
                 <input class="control-row__slider sim-range" id="stSlider" type="range"
                        min="0" max="23.99" step="0.01" value="2"
                        autocomplete="off" aria-label="Sidereal time"
@@ -89,7 +89,7 @@
                 <input class="control-row__input sim-num" id="latNumber" type="text"
                        inputmode="decimal" autocomplete="off" value="41.0" maxlength="6"
                        aria-label="Latitude, degrees">
-                <span class="sim-unit" aria-hidden="true">\(^{\circ}\)</span>
+                <span class="sim-unit" aria-hidden="true">&deg;</span>
                 <input class="control-row__slider sim-range" id="latSlider" type="range"
                        min="-90" max="90" step="0.1" value="41"
                        autocomplete="off" aria-label="Latitude"
@@ -109,7 +109,7 @@
                 <input class="control-row__input sim-num" id="raNumber" type="text"
                        inputmode="decimal" autocomplete="off" value="4.00" maxlength="6"
                        aria-label="Right ascension, hours">
-                <span class="sim-unit" aria-hidden="true">\(^{\mathrm{h}}\)</span>
+                <span class="sim-unit" aria-hidden="true"><sup>h</sup></span>
                 <input class="control-row__slider sim-range" id="raSlider" type="range"
                        min="0" max="23.99" step="0.01" value="4"
                        autocomplete="off" aria-label="Right ascension"
@@ -121,7 +121,7 @@
                 <input class="control-row__input sim-num" id="decNumber" type="text"
                        inputmode="decimal" autocomplete="off" value="30.0" maxlength="6"
                        aria-label="Declination, degrees">
-                <span class="sim-unit" aria-hidden="true">\(^{\circ}\)</span>
+                <span class="sim-unit" aria-hidden="true">&deg;</span>
                 <input class="control-row__slider sim-range" id="decSlider" type="range"
                        min="-90" max="90" step="0.1" value="30"
                        autocomplete="off" aria-label="Declination"
@@ -157,18 +157,6 @@
   <!-- Foundation equation helper + masthead component (copied in unchanged) -->
   <script src="foundation/kl-unl.js"></script>
   <script src="foundation/kl-unl-masthead.js"></script>
-
-  <!-- MathJax (vendored locally; SVG output, no CDN/fonts). Right-click any symbol
-       opens the MathJax menu ("Show Math As" -> TeX / MathML). Menu left enabled. -->
-  <script>
-    window.MathJax = {
-      loader: { failed: function (err) { console.warn('[MathJax] optional component not vendored:', err.message); } },
-      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']] },
-      svg: { fontCache: 'local' },
-      options: { enableMenu: true, menuOptions: { settings: { assistiveMml: false } } }
-    };
-  </script>
-  <script src="assets/mathjax/tex-mml-svg.js"></script>
 
   <!-- Sim logic -->
   <script src="simulation.js"></script>
