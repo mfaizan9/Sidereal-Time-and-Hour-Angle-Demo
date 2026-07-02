@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sidereal Time and Hour Angle Demonstrator</title>
+
+  <!-- KL-UNL shared foundation (copied UNCHANGED into foundation/) -->
+  <link href="foundation/kl-unl.css" type="text/css" rel="stylesheet" media="all">
+  <!-- Sim-specific styles only (never edit foundation files) -->
+  <link href="styles/styles.css" type="text/css" rel="stylesheet" media="all">
+</head>
+<body>
+  <a class="sr-only sr-only-focusable" href="#observerHeading">Skip to controls</a>
+
+  <main>
+    <div class="app-shell">
+      <!-- Title bar + Reset/About supplied by the shared masthead component.
+           sim-id "siderealTimeAndHourAngleDemo" already exists in
+           foundation/contents.json. -->
+      <kl-unl-masthead sim-id="siderealTimeAndHourAngleDemo" json-url="foundation/contents.json"></kl-unl-masthead>
+
+      <div class="app-layout sim-layout">
+
+        <!-- LEFT: the celestial-sphere diagram (canvas stage) -->
+        <section class="panel sim-panel sim-panel--sky" aria-labelledby="diagramHeading">
+          <h2 class="panel__heading" id="diagramHeading">The Celestial Sphere</h2>
+          <div class="panel__canvas-wrap">
+            <div class="stage" id="stage">
+              <canvas id="sky" width="440" height="440" role="img" tabindex="0"
+                      aria-describedby="skyHelp"
+                      aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown"
+                      aria-label="Celestial sphere diagram. Use the Star Properties controls to move the star.">
+              </canvas>
+              <!-- Visual-only positioned text labels (state announced via the live
+                   region and the canvas description). aria-hidden so they are not
+                   double-read. -->
+              <div class="overlay" id="overlay" aria-hidden="true">
+                <span class="lbl lbl--dir" id="lblN">N</span>
+                <span class="lbl lbl--dir" id="lblE">E</span>
+                <span class="lbl lbl--dir" id="lblS">S</span>
+                <span class="lbl lbl--dir" id="lblW">W</span>
+                <span class="lbl lbl--ra" id="lblRa">2.4h</span>
+                <span class="lbl lbl--dec" id="lblDec">15.3&#176;</span>
+                <span class="lbl lbl--ha" id="lblHa">2.4h</span>
+              </div>
+              <!-- Keyboard handle sitting over the star. Mouse-transparent
+                   (pointer-events:none) so mouse dragging goes to the canvas, but
+                   it stays in the Tab order for keyboard users. -->
+              <button id="starHandle" class="star-handle" type="button"
+                      aria-describedby="starHandleHelp"
+                      aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown"
+                      aria-label="Star position. Right ascension 4.0 hours, declination 30.0 degrees.">
+              </button>
+            </div>
+          </div>
+          <p class="panel__help">You can also change the star&rsquo;s position by dragging it.</p>
+          <p class="panel__help sim-kbd-hint">Keyboard: focus the diagram and use the arrow keys to rotate the view.</p>
+          <!-- Instructions announced when the canvas receives focus -->
+          <p id="skyHelp" class="sr-only">Interactive celestial-sphere diagram. Press the left and right arrow keys to rotate the view horizontally, and the up and down arrow keys to change the viewing altitude. Page Up and Page Down change the viewing altitude in larger steps. Use the Star Properties sliders, or the star handle, to move the star.</p>
+          <p id="starHandleHelp" class="sr-only">Use the arrow keys to move the star: left and right change its right ascension, up and down change its declination. Hold Shift for finer steps; Page Up and Page Down change declination in larger steps.</p>
+          <!-- Live, screen-reader-only description of the current diagram state -->
+          <p id="diagramDesc" class="sr-only" aria-live="polite"></p>
+        </section>
+
+        <!-- RIGHT: controls -->
+        <div class="right-col">
+
+          <!-- OBSERVER PROPERTIES: sidereal time + latitude -->
+          <section class="panel sim-panel" aria-labelledby="observerHeading">
+            <h2 class="panel__heading" id="observerHeading">Observer Properties</h2>
+            <fieldset class="control-fieldset">
+              <legend class="sr-only">Observer properties controls</legend>
+
+              <div class="control-row sim-slider-row">
+                <label class="control-row__label" for="stNumber">sidereal time:</label>
+                <input class="control-row__input sim-num" id="stNumber" type="text"
+                       inputmode="decimal" autocomplete="off" value="2.00" maxlength="6"
+                       aria-label="Sidereal time, hours">
+                <span class="sim-unit" aria-hidden="true">\(^{\mathrm{h}}\)</span>
+                <input class="control-row__slider sim-range" id="stSlider" type="range"
+                       min="0" max="23.99" step="0.01" value="2"
+                       autocomplete="off" aria-label="Sidereal time"
+                       aria-valuetext="Sidereal time 2.00 hours">
+              </div>
+
+              <div class="control-row sim-slider-row">
+                <label class="control-row__label" for="latNumber">latitude:</label>
+                <input class="control-row__input sim-num" id="latNumber" type="text"
+                       inputmode="decimal" autocomplete="off" value="41.0" maxlength="6"
+                       aria-label="Latitude, degrees">
+                <span class="sim-unit" aria-hidden="true">\(^{\circ}\)</span>
+                <input class="control-row__slider sim-range" id="latSlider" type="range"
+                       min="-90" max="90" step="0.1" value="41"
+                       autocomplete="off" aria-label="Latitude"
+                       aria-valuetext="Latitude 41.0 degrees">
+              </div>
+            </fieldset>
+          </section>
+
+          <!-- STAR PROPERTIES: right ascension + declination + hour angle -->
+          <section class="panel sim-panel" aria-labelledby="starHeading">
+            <h2 class="panel__heading" id="starHeading">Star Properties</h2>
+            <fieldset class="control-fieldset">
+              <legend class="sr-only">Star properties controls</legend>
+
+              <div class="control-row sim-slider-row">
+                <label class="control-row__label" for="raNumber">right ascension:</label>
+                <input class="control-row__input sim-num" id="raNumber" type="text"
+                       inputmode="decimal" autocomplete="off" value="4.00" maxlength="6"
+                       aria-label="Right ascension, hours">
+                <span class="sim-unit" aria-hidden="true">\(^{\mathrm{h}}\)</span>
+                <input class="control-row__slider sim-range" id="raSlider" type="range"
+                       min="0" max="23.99" step="0.01" value="4"
+                       autocomplete="off" aria-label="Right ascension"
+                       aria-valuetext="Right ascension 4.00 hours">
+              </div>
+
+              <div class="control-row sim-slider-row">
+                <label class="control-row__label" for="decNumber">declination:</label>
+                <input class="control-row__input sim-num" id="decNumber" type="text"
+                       inputmode="decimal" autocomplete="off" value="30.0" maxlength="6"
+                       aria-label="Declination, degrees">
+                <span class="sim-unit" aria-hidden="true">\(^{\circ}\)</span>
+                <input class="control-row__slider sim-range" id="decSlider" type="range"
+                       min="-90" max="90" step="0.1" value="30"
+                       autocomplete="off" aria-label="Declination"
+                       aria-valuetext="Declination 30.0 degrees">
+              </div>
+            </fieldset>
+
+            <p class="panel__help sim-drag-hint"><em>you can also change the star&rsquo;s position by dragging it</em></p>
+
+            <div class="sim-hourangle">
+              <div class="sim-ha-row">
+                <span class="sim-ha-readout">
+                  <span id="haReadout" aria-hidden="true"></span>
+                  <span id="haEqnSr" class="sr-only"></span>
+                </span>
+                <span class="control-choice sim-ha-check">
+                  <input type="checkbox" id="chkHaArc" autocomplete="off">
+                  <label for="chkHaArc">show hour angle arc</label>
+                </span>
+              </div>
+
+              <!-- The defining relation as plain italic text (read directly by
+                   screen readers; matches the original's italic caption). -->
+              <p class="sim-ha-eqn"><em>Hour Angle&nbsp;=&nbsp;Sidereal Time&nbsp;&minus;&nbsp;Right Ascension</em></p>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Foundation equation helper + masthead component (copied in unchanged) -->
+  <script src="foundation/kl-unl.js"></script>
+  <script src="foundation/kl-unl-masthead.js"></script>
+
+  <!-- MathJax (vendored locally; SVG output, no CDN/fonts). Right-click any symbol
+       opens the MathJax menu ("Show Math As" -> TeX / MathML). Menu left enabled. -->
+  <script>
+    window.MathJax = {
+      loader: { failed: function (err) { console.warn('[MathJax] optional component not vendored:', err.message); } },
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']] },
+      svg: { fontCache: 'local' },
+      options: { enableMenu: true, menuOptions: { settings: { assistiveMml: false } } }
+    };
+  </script>
+  <script src="assets/mathjax/tex-mml-svg.js"></script>
+
+  <!-- Sim logic -->
+  <script src="simulation.js"></script>
+</body>
+</html>

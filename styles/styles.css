@@ -1,0 +1,277 @@
+/* ===========================================================================
+   Sim-specific styles for the Sidereal Time and Hour Angle Demonstrator.
+   Layered ON TOP of the KL-UNL foundation (foundation/kl-unl.css), which is
+   never edited. Uses the foundation custom properties and classes where it can.
+   =========================================================================== */
+
+/* Comfortably large, zoomable type (rem-based so it tracks the browser font
+   setting and reflows at 200% zoom). Body floor ~1.125rem per the guidelines. */
+/* Clip the few px the shared masthead's padding can add at very narrow widths
+   (the foundation component is never edited). The scroller is <html>. */
+html { overflow-x: hidden; }
+
+body {
+  font-size: 1.125rem;
+  line-height: 1.4;
+  overflow-x: hidden;
+}
+
+/* --- Layout -------------------------------------------------------------- */
+/* Diagram on the left (wider), the two control panels stacked on the right,
+   mirroring the original Flash layout. Collapses to a single column at the
+   foundation's 56rem breakpoint (kept intact, re-declared for our own grid). */
+.app-layout.sim-layout {
+  grid-template-columns: minmax(24rem, 1.45fr) minmax(18rem, 0.8fr);
+  gap: 0.75rem;
+  align-items: stretch;   /* both columns share one row height */
+  padding: 0.5rem;
+}
+
+/* The diagram panel (left) becomes a flex column whose canvas area fills the
+   leftover space; the square canvas scales (centred) to fit that space. */
+.app-layout.sim-layout > .sim-panel--sky {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-layout.sim-layout > .sim-panel--sky .panel__canvas-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;          /* allow the canvas to shrink so it never forces
+                             the column taller than the controls column */
+}
+
+.right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.sim-panel {
+  border-width: var(--border-width, 1px);
+  border-style: var(--border-style, solid);
+  border-color: var(--border-color, #767676);
+  border-radius: 4px;
+}
+
+.sim-panel .panel__heading {
+  color: var(--foreground-color, #1a1a1a);
+  border-bottom: 1px solid #cccccc;
+}
+
+/* --- Canvas stage ------------------------------------------------------- */
+/* Keep the original internal coordinate system; CSS scales the canvas to fit
+   its panel while preserving the square aspect ratio. */
+.stage {
+  position: relative;
+  width: 100%;
+  max-width: 34rem;     /* enlarged box; the 440px canvas scales up (aspect kept) */
+  max-height: 100%;     /* fit the height the controls column dictates */
+  margin: auto;
+  aspect-ratio: 1 / 1;
+}
+
+#sky {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000000;   /* the sphere sits on a black field, as in the original */
+  border-radius: 2px;
+  touch-action: none;    /* dragging the star/sphere must not scroll the page */
+  cursor: grab;
+}
+
+#sky.dragging {
+  cursor: grabbing;
+}
+
+.sim-kbd-hint {
+  margin-top: 0.25rem;
+  font-style: italic;
+  color: #555555;
+}
+
+/* Focusable keyboard handle sitting over the star. Mouse-transparent so mouse
+   dragging still goes to the canvas, but it stays in the Tab order. */
+.star-handle {
+  position: absolute;
+  width: 1.9rem;
+  height: 1.9rem;
+  margin: 0;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.star-handle:focus-visible {
+  outline-width: 0.125rem;
+  outline-style: solid;
+  outline-color: var(--outline-color, #005fcc);
+  outline-offset: 0.125rem;
+}
+
+/* Positioned text labels drawn over the canvas. Coordinates are set in percent
+   by simulation.js, so they track the canvas at any display size or zoom. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.lbl {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Cardinal directions: white text on the green/black field -> dark halo so it
+   stays legible (>=3:1 against both). */
+.lbl--dir {
+  color: #ffffff;
+  font-size: 1.05rem;
+  text-shadow:
+    -1px -1px 0 #1a1a1a,  1px -1px 0 #1a1a1a,
+    -1px  1px 0 #1a1a1a,  1px  1px 0 #1a1a1a;
+}
+
+/* Star coordinate read-outs that ride on the sphere. Colours mirror the
+   original (RA = white, dec = red, hour angle = gold). A dark halo keeps them
+   legible over the sphere and the black field alike. */
+.lbl--ra,
+.lbl--dec,
+.lbl--ha {
+  font-size: 1rem;
+  font-weight: 700;
+  text-shadow:
+    -1px -1px 0 #000000,  1px -1px 0 #000000,
+    -1px  1px 0 #000000,  1px  1px 0 #000000;
+}
+.lbl--ra  { color: #ffffff; }   /* raColor  #FFFFFF */
+.lbl--dec { color: #ff6a6a; }   /* decColor #FF4040, lightened for halo contrast */
+.lbl--ha  { color: #ffcb65; }   /* hourAngleColor #FFCB65 */
+.lbl--ha  { display: none; }     /* shown only when "show hour angle arc" is on */
+
+/* --- Slider control rows ------------------------------------------------- */
+/* Give the first row breathing room from the heading divider. */
+.right-col > .sim-panel .control-fieldset {
+  padding-top: 0.85rem;
+}
+
+/* Fixed label column (wide enough for the longest label, "right ascension:")
+   so the number box starts at the same x in every row and every panel; the
+   trailing 1fr column holds the unit. Labels are left-aligned in that column. */
+.sim-slider-row {
+  grid-template-columns: 11rem auto 1fr;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.sim-slider-row .control-row__label {
+  text-align: left;
+  font-weight: 600;
+}
+
+/* All four number boxes share one width + height (consistent, equal-purpose). */
+.sim-num {
+  width: 5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-unit {
+  font-size: 1.05rem;
+  min-width: 1rem;
+}
+
+/* The slider spans the full width on its own row below the label/value, so the
+   number field and unit always line up in a tidy column. */
+.sim-range {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 2.75rem;   /* comfortable touch target */
+  cursor: pointer;
+}
+
+/* --- Hour angle read-out + equation ------------------------------------- */
+.sim-drag-hint {
+  margin: 0 1rem 0.5rem;
+  color: #555555;
+}
+
+.sim-hourangle {
+  padding: 0.25rem 1rem 1rem;
+}
+
+.sim-ha-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.sim-ha-readout {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.sim-ha-check {
+  min-height: 2.25rem;
+}
+
+.sim-ha-check label {
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.sim-ha-eqn {
+  margin: 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e0e0e0;
+  text-align: left;
+  font-size: 0.85rem;         /* sized so the relation stays on one line */
+  white-space: nowrap;        /* keep "Hour Angle = Sidereal Time − Right Ascension" on one line */
+  overflow-x: auto;           /* extreme-narrow safety: scroll in its own box, not the page */
+  overflow-y: hidden;
+}
+
+.sim-ha-eqn em { font-style: italic; }
+
+/* Belt-and-braces: never let panel content push the page sideways. */
+.sim-panel { overflow-x: hidden; }
+.sim-hourangle { min-width: 0; }
+
+/* --- Responsive: phone portrait ----------------------------------------- */
+/* Carry the layout below the foundation's 56rem breakpoint into a single,
+   stacked, full-width column in reading order. The foundation already sets
+   .app-layout to 1fr at 56rem; we re-assert it for our higher-specificity
+   selector so we don't fight it. */
+@media (max-width: 56rem) {
+  .app-layout.sim-layout {
+    grid-template-columns: 1fr;
+  }
+  .stage {
+    max-width: 24rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  body { font-size: 1.0625rem; }
+  .sim-slider-row { grid-template-columns: 10.25rem auto 1fr; }
+}
+
+/* Respect users who prefer reduced motion (this sim has no autonomous motion,
+   but keep transitions instant for them). */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
